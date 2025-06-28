@@ -3,12 +3,15 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import "./index.css"
+import "@fontsource/nunito";
 
 function App() {
   const [weather, setWeather] = useState(null);
   const [city, setCity] = useState(""); // Will be filled by search or geolocation
   const [input, setInput] = useState("");
   const [error, setError] = useState(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [forecast, setForecast] = useState([]);
 
   const API_KEY = "bd5726984be5319e8df3a05f15913371";
 
@@ -46,12 +49,26 @@ function App() {
       .then((data) => {
         setWeather(data);
         setCity(data.name);
-        setInput(data.name); // Set input to the city name from the geolocation data
         setError(null); // Clear any previous errors
+        fetchForecast(data.name); // Fetch the forecast for the current city
       })
       .catch(() => {
         setError("Error fetching weather data. Please try again.");
         setWeather(null); // Clear the weather data on error
+      });
+  };
+
+  const extractDailyForecast = (list) => {
+    const filtered = list.filter(item => item.dt_txt.includes("12:00:00"));
+    return filtered.slice(0, 5); // next 5 days
+  };
+
+  const fetchForecast = (cityName) => {
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=metric`)
+      .then((res) => res.json())
+      .then((data) => {
+        const daily = extractDailyForecast(data.list);
+        setForecast(daily);
       });
   };
 
@@ -126,15 +143,17 @@ function App() {
 
   return (
     <>
-    <div className={`min-h-screen flex flex-col items-center justify-center transition-all duration-500 ${weather ? getBackgroundClass(weather.weather[0].main) : 'bg-blue-100'}`}>
+    <div className={`min-h-screen flex flex-col items-center justify-center font-nunito transition-all duration-500 ${weather ? getBackgroundClass(weather.weather[0].main) : 'bg-blue-100'}`}>
       <form onSubmit={handleSearch} className="mb-12">
-        <div className='flex overflow-hidden rounded-lg border border-gray-300 shadow-sm'>
+        <div className='flex overflow-hidden rounded-lg border border-gray-300 shadow-sm bg-gray-300'>
           <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter city name"
-          className="p-2 w-43 focus:outline-none"
+          placeholder={isFocused ?"": "Enter city name or district"}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className="p-2 w-55 focus:outline-none"
         />
         <button
           type="submit"
@@ -147,28 +166,65 @@ function App() {
 
       {weather && (
       <>
-        {/* Weather icon above city name */}
-        <i className={`fa-solid ${getWeatherIconClass(weather.weather[0].main)} text-5xl mb-2`}></i>
-        <h1 className="text-2xl font-bold">
+        <div className="flex flex-col items-center mb-6 gap-6">
+          <i className={`fa-solid ${getWeatherIconClass(weather.weather[0].main)} text-8xl mb-2`}></i>
+          <p className="text-5xl font-bold ">{Math.round(weather.main.temp)} 
+            <span className='text-2xl font-normal'>°C</span></p>
+          <p className="text-lg capitalize">{weather.weather[0].description}</p>
+          <h1 className="font-bold">
           {weather.name}{weather.sys?.country ? `, ${weather.sys.country}` : ""}
-        </h1>
+          </h1>
+        </div>
+        {/* Weather icon above city name */}
       </>
       )}
 
       {error && <p className="text-red-200 mb-4">{error}</p>}
 
       {weather ? (
-        <div className="mt-4 p-6  flex flex-col rounded-lg items-center">
-          <p className="text-lg">{weather.main.temp} °C</p>
-          <p className="text-lg">Weather: {weather.weather[0].description}</p>
-          <p className="text-lg">Humidity: {weather.main.humidity}%</p>
-          <p className="text-lg">Wind Speed: {weather.wind.speed} m/s</p>
+        <div className="mt-24 px-6 w-full max-w-sm">
+          <div className="bg-[rgba(255,255,255,0.5)] backdrop-blur-sm rounded-xl shadow-md p-6 flex flex-col gap-4 font-nunito text-lg w-full">
+            <div className="flex justify-between">
+              <span className="font-semibold">Humidity:</span>
+              <span>{weather.main.humidity}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-semibold">Wind Speed:</span>
+              <span>{weather.wind.speed} m/s</span>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="mt-4 p-6 bg-white rounded-lg shadow-md">
           <p className="text-lg">Loading weather data...</p>
         </div>
-      )} {}
+      )}
+
+      {forecast.length > 0 && (
+        <div className="mt-12 overflow-x-auto w-full">
+          <div className="flex gap-4 px-6">
+            {forecast.map((day, idx) => {
+              const date = new Date(day.dt_txt);
+              const isTomorrow = idx === 0;
+              const dayLabel = isTomorrow
+                ? "Tomorrow"
+                : date.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" });
+
+              return (
+                <div
+                  key={idx}
+                  className="min-w-[120px] bg-[#1e1e2f] text-white rounded-xl p-4 flex flex-col items-center shadow-lg"
+                >
+                  <p className="text-sm font-medium">{dayLabel}</p>
+                  <i className={`fa-solid ${getWeatherIconClass(day.weather[0].main)} text-3xl my-2`}></i>
+                  <p className="text-md">{Math.round(day.main.temp_max)}°C</p>
+                  <p className="text-sm opacity-80">{Math.round(day.main.temp_min)}°C</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   </>
   )
