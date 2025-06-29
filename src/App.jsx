@@ -88,10 +88,10 @@ function App() {
       case 'Mist':
       case 'Fog':
         return 'bg-gradient-to-b from-gray-200 to-gray-400';
-      case 'Night': // if you detect night manually
+      case 'Night': 
         return 'bg-gradient-to-b from-gray-900 to-gray-700';
       default:
-        return 'bg-blue-100'; // fallback
+        return 'bg-blue-100'; 
     }
   };
 
@@ -136,16 +136,17 @@ function App() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (input.trim() !== "") {
-      fetchWeatherByCity(input.trim());
+      fetchWeatherByCity(input.trim());  // Fetch weather for the searched city
+      fetchForecast(input.trim()); // Fetch forecast for the searched city
       setInput(""); // Clear the input field after search
     }
   }
 
   return (
     <>
-    <div className={`min-h-screen flex flex-col items-center justify-center font-nunito transition-all duration-500 ${weather ? getBackgroundClass(weather.weather[0].main) : 'bg-blue-100'}`}>
-      <form onSubmit={handleSearch} className="mb-12">
-        <div className='flex overflow-hidden rounded-lg border border-gray-300 shadow-sm bg-gray-300'>
+    <div className={`min-h-screen flex flex-col items-center justify-center font-nunito transition-all duration-500 text-white  ${weather ? getBackgroundClass(weather.weather[0].main) : 'bg-blue-100'}`}>
+      <form onSubmit={handleSearch} className="mb-12 mt-5">
+        <div className='flex overflow-hidden rounded-lg border text-gray-700 border-gray-300 shadow-sm bg-[rgba(255,255,255,0.5)]'>
           <input
           type="text"
           value={input}
@@ -166,14 +167,14 @@ function App() {
 
       {weather && (
       <>
-        <div className="flex flex-col items-center mb-6 gap-6">
+        <div className="flex flex-col items-center mb-6 gap-6 mt-12">
           <i className={`fa-solid ${getWeatherIconClass(weather.weather[0].main)} text-8xl mb-2`}></i>
-          <p className="text-5xl font-bold ">{Math.round(weather.main.temp)} 
+          <p className="text-5xl">{Math.round(weather.main.temp)} 
             <span className='text-2xl font-normal'>°C</span></p>
           <p className="text-lg capitalize">{weather.weather[0].description}</p>
-          <h1 className="font-bold">
+          <h1 className="">
           {weather.name}{weather.sys?.country ? `, ${weather.sys.country}` : ""}
-          </h1>
+        </h1>
         </div>
         {/* Weather icon above city name */}
       </>
@@ -183,13 +184,13 @@ function App() {
 
       {weather ? (
         <div className="mt-24 px-6 w-full max-w-sm">
-          <div className="bg-[rgba(255,255,255,0.5)] backdrop-blur-sm rounded-xl shadow-md p-6 flex flex-col gap-4 font-nunito text-lg w-full">
+          <div className="bg-[rgba(112,134,179,0.2)] rounded-xl shadow-md p-4 flex flex-col gap-4">
             <div className="flex justify-between">
-              <span className="font-semibold">Humidity:</span>
+              <span className="">Humidity:</span>
               <span>{weather.main.humidity}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-semibold">Wind Speed:</span>
+              <span className="">Wind Speed:</span>
               <span>{weather.wind.speed} m/s</span>
             </div>
           </div>
@@ -201,8 +202,12 @@ function App() {
       )}
 
       {forecast.length > 0 && (
-        <div className="mt-12 overflow-x-auto w-full">
-          <div className="flex gap-4 px-6">
+        
+        <div className="mt-12 mb-12 px-6 max-w-md w-full">
+
+
+          <div className="bg-[rgba(112,134,179,0.2)] rounded-xl shadow-md overflow-hidden">
+            <p className="text-l mx-3 px-5 py-2 border-b border-white">5-Day Forecast</p>
             {forecast.map((day, idx) => {
               const date = new Date(day.dt_txt);
               const isTomorrow = idx === 0;
@@ -213,12 +218,12 @@ function App() {
               return (
                 <div
                   key={idx}
-                  className="min-w-[120px] bg-[#1e1e2f] text-white rounded-xl p-4 flex flex-col items-center shadow-lg"
+                  className=" text-white mx-3 px-5 py-1 flex items-center border-b border-white/40"
                 >
-                  <p className="text-sm font-medium">{dayLabel}</p>
-                  <i className={`fa-solid ${getWeatherIconClass(day.weather[0].main)} text-3xl my-2`}></i>
-                  <p className="text-md">{Math.round(day.main.temp_max)}°C</p>
-                  <p className="text-sm opacity-80">{Math.round(day.main.temp_min)}°C</p>
+                  <p className="text-sm font-medium w-28">{dayLabel}</p>
+                  <i className={`fa-solid  ${getWeatherIconClass(day.weather[0].main)} text-xl my-2 w-6 text-center`}></i>
+                  <p className="text-md w-20 text-right ">{Math.round(day.main.temp_max)}°C</p>
+                  <p className="text-sm opacity-80 w-20 text-right">{Math.round(day.main.temp_min)}°C</p>
                 </div>
               );
             })}
