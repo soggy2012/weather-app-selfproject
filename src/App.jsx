@@ -6,9 +6,9 @@ import "./index.css"
 import "@fontsource/nunito";
 
 function App() {
-  const [weather, setWeather] = useState(null);
-  const [city, setCity] = useState(""); // Will be filled by search or geolocation
-  const [input, setInput] = useState("");
+  const [weather, setWeather] = useState(null); // Store weather data
+  const [city, setCity] = useState(""); // Store city name
+  const [input, setInput] = useState("");  
   const [error, setError] = useState(null);
   const [isFocused, setIsFocused] = useState(false);
   const [forecast, setForecast] = useState([]);
@@ -203,12 +203,13 @@ function App() {
 
       {forecast.length > 0 && (
         
-        <div className="mt-12 mb-12 px-6 max-w-md w-full">
+        <div className="mt-12 mb-12 px-6 max-w-md w-full md:max-w-5xl">
 
 
           <div className="bg-[rgba(112,134,179,0.2)] rounded-xl shadow-md overflow-hidden">
             <p className="text-l mx-3 px-5 py-2 border-b border-white">5-Day Forecast</p>
-            {forecast.map((day, idx) => {
+            <div className="flex flex-col md:flex-row md:justify-between">
+              {forecast.map((day, idx) => {
               const date = new Date(day.dt_txt);
               const isTomorrow = idx === 0;
               const dayLabel = isTomorrow
@@ -218,15 +219,16 @@ function App() {
               return (
                 <div
                   key={idx}
-                  className=" text-white mx-3 px-5 py-1 flex items-center border-b border-white/40"
+                  className=" text-white mx-3 px-5 py-1 flex items-center border-b border-white/40 md:border-b-0 md:border-r last:border-r-0 md:flex-col md:items-center md:w-full md:justify-center"
                 >
-                  <p className="text-sm font-medium w-28">{dayLabel}</p>
-                  <i className={`fa-solid  ${getWeatherIconClass(day.weather[0].main)} text-xl my-2 w-6 text-center`}></i>
-                  <p className="text-md w-20 text-right ">{Math.round(day.main.temp_max)}°C</p>
-                  <p className="text-sm opacity-80 w-20 text-right">{Math.round(day.main.temp_min)}°C</p>
+                  <p className="text-sm font-medium w-24 md:w-[5.5rem] text-center leading-tight">{dayLabel}</p>
+                  <i className={`fa-solid  ${getWeatherIconClass(day.weather[0].main)} text-xl my-2 w-6 text-center md:w-14 `}></i>
+                  <p className="text-md w-20 text-right md:w-[2rem]">{Math.round(day.main.temp_max)}°C</p>
+                  <p className="text-sm opacity-80 w-20 text-right md:w-[2rem]">{Math.round(day.main.temp_min)}°C</p>
                 </div>
-              );
-            })}
+                  );
+                })}
+            </div>
           </div>
         </div>
       )}
