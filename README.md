@@ -1,10 +1,14 @@
 # 🌤️ Weather App
 
 This is a challenge project where i made a responsive weather app built with **React** and **Tailwind CSS**, powered by the **OpenWeatherMap API**.
-I'm currently learning React and built this project as part of my learning process. I have gotten help from other resources such as Stack Overflow, Youtube, Github and Github Copilot to better understand the concept and also troubleshooting the issues that i've faced.
 
 
-Link: https://adam-weather-app-selfproject.vercel.app/
+I'm currently learning React and created this project as part of my learning process. I received help from resources like **Stack Overflow**, **YouTube**, **GitHub**, and **GitHub Copilot** to better understand the concepts and troubleshoot issues.
+
+**🔗 Live Demo:**  
+[https://adam-weather-app-selfproject.vercel.app/](https://adam-weather-app-selfproject.vercel.app/)
+
+---
 
 ## Features
 
