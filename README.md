@@ -25,4 +25,4 @@ Link: https://adam-weather-app-selfproject.vercel.app/
 
 - This project is hosted on **Vercel**, which allows secure handling of environment variables like the OpenWeatherMap API key.
   
-- I'm not completely satisfied with the web-app however, which is why i will most likely redesign some formats and add more features such as switching between day and night, change celcius to fahrenheit, experiment with react particles, etc.
+- To be transparent, I'm not completely satisfied with the web-app however, which is why i will most likely redesign some formats and add more features such as switching between day and night, change celcius to fahrenheit, experiment with react particles, etc.
