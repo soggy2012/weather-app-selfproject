@@ -8,13 +8,15 @@ import "@fontsource/nunito";
 function App() {
   const [weather, setWeather] = useState(null); // Store weather data
   const [city, setCity] = useState(""); // Store city name
-  const [input, setInput] = useState("");  
-  const [error, setError] = useState(null);
-  const [isFocused, setIsFocused] = useState(false);
-  const [forecast, setForecast] = useState([]);
+  const [input, setInput] = useState("");  // Store user input for city search
+  const [error, setError] = useState(null); // Store error messages
+  const [isFocused, setIsFocused] = useState(false); // Track if the input field is focused
+  const [forecast, setForecast] = useState([]); // Store 5-day weather forecast
 
-  const API_KEY = import.meta.env.VITE_API_KEY;
+  const API_KEY = import.meta.env.VITE_API_KEY; //API key (read from .env file)
 
+
+  // Function to fetch weather data by city name
   const fetchWeatherByCity = (cityName) => {
 
     // Step 1: Send a GET request to the OpenWeather API using the city name
@@ -41,6 +43,7 @@ function App() {
       });
   };
 
+  // Function to fetch weather data by geolocation (latitude and longitude)
   const fetchWeatherByGeolocation = (lat, lon) => {
 
     // Call API using latitude and longitude
@@ -58,11 +61,13 @@ function App() {
       });
   };
 
+  // Function to extract daily forecast from the 5-day forecast data
   const extractDailyForecast = (list) => {
     const filtered = list.filter(item => item.dt_txt.includes("12:00:00"));
     return filtered.slice(0, 5); // next 5 days
   };
 
+  // Function to fetch the 5-day weather forecast for a given city
   const fetchForecast = (cityName) => {
     fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=metric`)
       .then((res) => res.json())
@@ -72,6 +77,7 @@ function App() {
       });
   };
 
+  // Function to determine the background class based on the main weather condition
   const getBackgroundClass = (mainWeather) => {
     switch (mainWeather) {
       case 'Clear':
@@ -95,6 +101,7 @@ function App() {
     }
   };
 
+  // Function to get the appropriate weather icon class based on the main weather condition
   const getWeatherIconClass = (mainWeather) => {
     switch (mainWeather) {
       case 'Clear':
@@ -116,7 +123,7 @@ function App() {
     }
 };
 
-
+  // useEffect to fetch weather data based on geolocation when the component mounts
   useEffect(() => { 
     //  Check if the user has allowed geolocation access
     if (navigator.geolocation) {
@@ -133,6 +140,7 @@ function App() {
     }
   }, []);
 
+  // Function to handle the search form submission
   const handleSearch = (e) => {
     e.preventDefault();
     if (input.trim() !== "") {
@@ -176,7 +184,7 @@ function App() {
           {weather.name}{weather.sys?.country ? `, ${weather.sys.country}` : ""}
         </h1>
         </div>
-        {/* Weather icon above city name */}
+        
       </>
       )}
 
